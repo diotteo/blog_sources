@@ -31,6 +31,7 @@ rgsin2 = rgsin ./ max(rgsin);
 
 plot(x, ysin, 'Color', 'yellow', x, gsin, 'Color', 'green', x, rsin, 'Color', 'red', x, rgsin2, '-;red+green;')
 xlabel('distance (µm)')
-ylim([-2, 2]);
+ylabel('normalized amplitude')
+ylim([-1.2, 1.2]);
 a = 80/255;
 whitebg([a a a])
