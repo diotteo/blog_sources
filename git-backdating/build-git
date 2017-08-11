@@ -1,0 +1,33 @@
+#! /bin/bash
+
+GIT_BASE_DIR='/home/dioo/Prog/old-projects/libsdlinput_test'
+
+pushd "${GIT_BASE_DIR}"
+rm -rf * .git || true
+git init .
+popd
+
+#sed -n '2,$ { p }' < listing.txt | while read line; do
+while read line; do
+	datestr="$(cut -c-19 <<<"$line") UTC"
+	file=$(cut -c29- <<<"$line")
+	afile='/home/dioo/Prog/old-projects/rsync-copy/libsdlinput/'"$file"
+
+	echo "afile = $afile"
+
+	pushd ${GIT_BASE_DIR}
+	if [[ "$afile" =~ .tar.gz$ ]]; then
+		tar -xf "$afile"
+	elif [[ "$afile" =~ .zip$ ]]; then
+		unzip -o "$afile"
+	else
+		d=$(dirname "$file")
+		mkdir -p "${d}"
+		cp -v "$afile" "$file"
+	fi
+	if git status --porcelain >/dev/null; then
+		git add .
+		git commit --date "${datestr}" -m "Commit archive ${file}" -m "Timestamp: ${datestr}"
+	fi
+	popd
+done < <(sed -n '1,$ { p }' < listing.txt)
